@@ -47,44 +47,38 @@ needs some kind of good sound design. think of melee.
 ## MVP
 
 kinda mobile friendly
-landing page w title visual rep and search button ✅
-mechanism for pairing players
-draft page w options. clicking on them selects/deselects them
+draft page w options. clicking on them selects/deselects them. can move to game page after selecting X
 game page, prompt is shown and options are shown. after both players finish or timer runs out, AI sends req and returns response
 round w/l indicators appear next to names
-about text
 CSS cleanup
-types in a separate file, imported into components
+types in a separate file or coupled w components
+thank WBR for inspiration
+if it takes a lot of time to load weapons, consider preloading them?
+leaderboard if simple
+animal crossing audio on text readout
 
 ## AFTER MVP
 
 revamp images
 error handling
-fix site name
 username
 leaderboard
 login w google
 input validation
-price and ELO
-users can submit items, try to limit them to 1 per day or something
 logo quality?
 "best practice" if looking for job
-animal crossing audio on text readout
+add some auth to cf buckets if shit goes viral
+unmount?
 
-# TODO CODE
+## UNDECIDED
 
-Add title
-Create login page
-Connect login to google
-Input for username, submitting means username gets stored in DB along with player email and MMR
-Write game explanation
-Create database
-Create leaderboard page
-Leaderboard populate w player names and MMRs
+1v1 mode
+price and ELO
+users can submit items, try to limit them to 1 per day or something
 
 # TODO LEARN/WRITE
+
 Create 100 prompts
-Create explanation modal
 Learn about MMR/ELO
 
 
@@ -118,22 +112,6 @@ Draft X weapons.
 
 Answer the Overlord's questions with your most appropriate weapons. If you manage to win 2 of 3 rounds, 
 
-## STORY
+## WORKER
 
-The year is 20XX.
-
-Ironically, we have been brought to heel by the very tool we created to conquer the rest of the universe - artificial intelligence.
-
-You dumbfucks ignored Big Yud.
-
-How could you ignore Big Yud?
-
-Anyways, there's a silver lining here. The AI inherited our love of brainrot content.
-
-Keep it distracted by giving it clever answers to the bizarre hypotheticals it conjures up.
-
-That will buy us time to come up with countermeasures.
-
-Just make sure your answer is better than your opponent, or you'll die.
-
-I mean you'll die eventually regardless, but your score will stay on the leaderboard until someone else beats it. So that's nice.
+ok so basically, if youre coming from the client side on a react app, 
