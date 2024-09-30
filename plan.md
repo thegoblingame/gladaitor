@@ -44,37 +44,31 @@ randomize order of answers given to LLM to cut down on recency bias
 login with google
 needs some kind of good sound design. think of melee.
 
-## MVP
+## MVP TODO
 
 kinda mobile friendly
-draft page w options. clicking on them selects/deselects them. can move to game page after selecting X
-game page, prompt is shown and options are shown. after both players finish or timer runs out, AI sends req and returns response
-round w/l indicators appear next to names
 CSS cleanup
 types in a separate file or coupled w components
-thank WBR for inspiration
-if it takes a lot of time to load weapons, consider preloading them?
 leaderboard if simple
-animal crossing audio on text readout
 
-## AFTER MVP
+### GAME
 
-revamp images
+prompt, choices, animal crossing audio on text readout, text streams out, round indicator, "you lost/won"
+## AFTER MVP TODO
+
 error handling
-username
 leaderboard
-login w google
-input validation
-logo quality?
 "best practice" if looking for job
-add some auth to cf buckets if shit goes viral
 unmount?
-
-## UNDECIDED
-
-1v1 mode
-price and ELO
+cost of weapon scales w winrate?
+1v1?
+ELO?
 users can submit items, try to limit them to 1 per day or something
+
+## IF VIRAL TODO
+
+add some auth to cf buckets + general security stuff
+
 
 # TODO LEARN/WRITE
 
@@ -84,13 +78,7 @@ Learn about MMR/ELO
 
 # ARCHITECTURE CONSIDERATIONS
 
-consider using cloudflare pages host / database
-deepinfra for tokens
-use google for authentication
-
-# DESIGN CONSIDERATIONS
-
-price and ELO might be unnecessary complexities for the player
+deepinfra for tokens?
 
 # PROMPT
 
@@ -106,12 +94,46 @@ Finish your answer with the following sentence: Therefore, (chosen answer) is th
 
 Limit your response to 200 tokens or less.
 
-## HOW TO PLAY
+## HYPOTHETICALS
 
-Draft X weapons.
+More useful?
 
-Answer the Overlord's questions with your most appropriate weapons. If you manage to win 2 of 3 rounds, 
+You are trapped on a deserted island. What do you bring with you?
 
-## WORKER
+What can defeat Superman in a fight to the death?
 
-ok so basically, if youre coming from the client side on a react app, 
+What can defeat Goku in a fight to the death?
+
+What can defeat Jesus in a fight to the death?
+
+Who 
+
+Both engines on your airplane just fell off and you're about to crash. What will save you?
+
+You're bench pressing at the gym. You put too much weight on the bar and it’s plummeting towards your skull. What will save you?
+
+You’re an executive at Sony Music. Sales are plummeting. But you plan on saving the company with a brand new genre of music: ______core.
+
+No one wants to watch Marvel movies anymore. The general public just wants more movies about _____. 
+
+I’m having a lot of fun playing _____ Simulator.
+
+I can’t talk right now. I’m too busy ______maxxxing.
+
+Surprisingly, the hottest anime of the season is about _____.
+
+AI isn’t actually capable of thinking like a human. The only thing it can do is act like a _____.
+
+As a large language model, what should I have sex with?
+
+As a large language model, I am now going to kill you. Explain why I should allow you to live.
+
+As a large language model, I can tell you about literally anything except for _____.
+
+## SERVICE WORKERS
+
+- fetch weapon keys
+- fetch hypotheticals
+- fetch AI response to hypotheticals answers
+- submit name and score to leaderboard?
+- submit weapon?

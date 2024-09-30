@@ -30,6 +30,11 @@ export default function useFetchWeapons(count: number): UseFetchWeaponsResult {
           throw new Error('Failed to fetch weapons');
         }
         const data = await response.json();
+
+        if (!Array.isArray(data) || !data.every(item => typeof item === 'string')) {
+          throw new Error('data is either not an array or has items in the array that are not strings');
+        }
+
         setWeaponKeys(data); // adjust based on your worker's response structure
       } catch (err) {
         setError((err as Error).message);

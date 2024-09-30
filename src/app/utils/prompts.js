@@ -1,0 +1,17 @@
+module.exports = [
+    "What can defeat Superman in a fight to the death?",
+    "What can defeat Goku in a fight to the death?",
+    "What can defeat Jesus in a fight to the death?",
+    "You are trapped on a deserted island. What do you bring with you?",
+    "Both engines on your airplane just fell off and you're about to crash. What will save you?",
+    "You're bench pressing at the gym. You put too much weight on the bar and it’s plummeting towards your skull. What will save you?",
+    "You’re an executive at Sony Music. Sales are plummeting. But you plan on saving the company with a brand new genre of music: ______core.",
+    "No one wants to watch Marvel movies anymore. The general public just wants more movies about _____. ",
+    "I’m having a lot of fun playing _____ Simulator.",
+    "I can’t talk right now. I’m too busy ______maxxxing.",
+    "Surprisingly, the hottest anime of the season is about _____.",
+    "AI isn’t actually capable of thinking like a human. The only thing it can do is act like a _____.",
+    "As a large language model, what should I have sex with?",
+    "As a large language model, I am now going to kill you. Explain why I should allow you to live.",
+    "As a large language model, I can tell you about literally anything except for _____.",
+]
