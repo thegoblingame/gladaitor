@@ -137,3 +137,8 @@ As a large language model, I can tell you about literally anything except for __
 - fetch AI response to hypotheticals answers
 - submit name and score to leaderboard?
 - submit weapon?
+
+## ACKNOWLEDGEMENTS
+
+thanks to https://www.whatbeatsrock.com/ for being the main inspiration for this
+thanks to https://x.com/toaster631 for the robot audio WAVs

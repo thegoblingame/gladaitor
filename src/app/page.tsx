@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Button, TextField } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 // import OpenAI from 'openai';
-// import DraftBox from './components/DraftBox';
 // import useFetchWeapons from './hooks/useFetchWeapons';
 import TextStreamer from './components/TextStreamer';
 import Weapon from './components/Weapon';
+import prompts from './utils/prompts.json';
 
 // const client = new OpenAI({
 //     apiKey: process.env['OPENAI_GRANT_PERSONAL_KEY'], // This is the default and can be omitted
@@ -33,6 +33,9 @@ export default function Home() {
   // const [error, setError] = useState<string>("");
   // const [loading, setLoading] = useState<boolean>(false);
   const [roundCounter, setRoundCounter] = useState<number>(0);
+  const [overlordMood, setOverlordMood] = useState<string>("rational");
+  const [shuffledPromptIndexes, setShuffledPromptIndexes] = useState<number[]>([]);
+  const [currentPrompt, setCurrentPrompt] = useState<string>("");
   // dual purpose for drafting weapons as well as using them
   // const [selectedWeapons, setSelectedWeapons] = useState<WeaponProps[]>([]);
 
@@ -45,6 +48,8 @@ export default function Home() {
   // requests will specify which category of weapon we want, but ultimately they will all be put in the same array for the sake of convenience
   // this works bc the URLS are just category/imagekey
   // 
+
+  const moods = ["rational","humorous","weird"];
 
   const validateName = (name: string) => {
     const nameRegex = /^[a-zA-Z0-9\s'-]+$/;
@@ -70,13 +75,27 @@ export default function Home() {
     }
   }
 
+  const preselectPrompts = () => {
+    // @ts-ignore
+    const shuffledIndexes = [...Array(prompts.length).keys()];
+    for (let i = shuffledIndexes.length - 1; i >= 0; i--) {
+      let randomInt = Math.floor(Math.random() * (i + 1));
+        [shuffledIndexes[i],shuffledIndexes[randomInt]] = [shuffledIndexes[randomInt],shuffledIndexes[i]];
+    }
+    setShuffledPromptIndexes(shuffledIndexes);
+  }
+
 
   useEffect(() => {
-    const randInt = Math.floor(Math.random() * 9999)
-    setName(`anon${randInt}`)
+    const randomAnon = Math.floor(Math.random() * 9999);
+    setName(`anon${randomAnon}`);
+    preselectPrompts();
   },[])
   
   useEffect(() => {
+    const randomMood = Math.floor(Math.random() * moods.length);
+    setOverlordMood(moods[randomMood]);
+    setCurrentPrompt(prompts[shuffledPromptIndexes[roundCounter - 1]]?.text);
     // fetchWeapons(2,"generic_weapons");
     // fetchWeapons(3,"unusual_weapons");
   },[roundCounter])
@@ -100,7 +119,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-1/2">
         <h1 className="text-6xl mb-8">gladAItor</h1>
 
-          <img className="w-1/2 mb-8" src="/logo.png" alt="robot overlord"/>
+          <img className="w-1/2 mb-8" src="/images/logo.png" alt="robot overlord"/>
         <div className="flex mb-8">
           <TextField 
             error={!nameValid}
@@ -122,9 +141,9 @@ export default function Home() {
             <p className="my-4 text-lg">Ironically, we have been brought to heel by the very tool we created to conquer the rest of the universe - artificial intelligence.</p>
             <p className="my-4 text-lg">You dumbfucks ignored <a className="font-bold hover:text-cyan-400" href="https://gladaitor.com/yuds/bigyud" target="_blank">Big Yud</a>.</p>
             <p className="my-4 text-lg">How could you ignore <a className="font-bold hover:text-cyan-400" href="https://gladaitor.com/yuds/biggeryud" target="_blank">Big Yud</a>?</p>
-            <p className="my-4 text-lg">Anyways, there's a silver lining here. The kAIser inherited our love of <span className="font-bold text-red-600">brainrot content</span>. It demands constant entertainment.</p>
+            <p className="my-4 text-lg">Anyways, there&#39;s a silver lining here. The kAIser inherited our love of <span className="font-bold text-red-600">brainrot content</span>. It demands constant entertainment.</p>
             <p className="my-4 text-lg">Keep it distracted by giving it <span className="font-bold text-green-500">clever answers</span> to the <span className="font-bold text-purple-600">bizarre hypotheticals</span> it conjures up. That will buy us time to come up with countermeasures.</p>
-            <p className="my-4 text-lg">Just make sure your answer suits the whims of the kAIser better than your opponent, or <span className="font-bold text-red-600">you'll die</span>.</p>
+            <p className="my-4 text-lg">Just make sure your answer suits the whims of the kAIser better than your opponent, or <span className="font-bold text-red-600">you&#39;ll die</span>.</p>
           </AccordionDetails>
         </Accordion>
       </div>
@@ -139,15 +158,15 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center">
       <div className="flex flex-col items-center w-1/2">
         <h1 className="text-3xl mb-4">round {roundCounter}</h1>
-        <img className="size-1/3" src="/logo.png" alt="robot overlord"/>
+        <img className="size-1/3" src="/images/logo.png" alt="robot overlord"/>
         <div className="flex flex-col my-4">
           {/* <p className="text-2xl mx-4">Both engines on your airplane just fell off and you're about to crash. What will save your life?</p> */}
-          <TextStreamer text="You are trapped on a deserted island. What do you bring with you?" speed={50} />
+          <TextStreamer text={currentPrompt} speed={25} />
           <p className="text-2xl my-4 self-center">The kAIser requires a <span className="font-bold text-red-600">rational</span> answer.</p>
         </div>
         <div className="flex justify-between">
-          <img className="size-1/6" src="/tony.jpg" alt="you, slave human"/>
-          <img className="size-1/6" src="/clippy.webp" alt="slave robot"/>
+          <img className="size-1/6" src="/images/tony.jpg" alt="you, slave human"/>
+          <img className="size-1/6" src="/images/clippy.webp" alt="slave robot"/>
         </div>
       </div>
         <div className="flex m-4">
