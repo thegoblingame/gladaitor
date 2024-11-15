@@ -9,7 +9,10 @@ image names cant have commas
 
 ## MVP TODO
 
-add prompts
+## MOBILE ISSUES
+
+some kind of rendering issue that makes it slower with every round
+audio not playing
 
 ## AFTER MVP TODO
 
@@ -94,7 +97,7 @@ krillin, aardvark
 
 ## WSL
 
-cd mnt/c/Users/khaaa/Desktop/gladaitor/
+cd ../../mnt/c/Users/khaaa/Desktop/gladaitor/
 npm run deploy
 
 ## ACKNOWLEDGEMENTS

@@ -1,5 +1,9 @@
-import React, { useEffect, useRef } from "react";
+"use client";
 
+import React, { useEffect, useRef } from "react";
+import useIsMobile from "../hooks/useIsMobile";
+import { useContext } from "react";
+import { AudioContext } from "../utils/AudioProvider";
 export interface TextStreamerProps {
   text: string;
   speed: number;
@@ -7,55 +11,23 @@ export interface TextStreamerProps {
 }
 
 const TextStreamer = ({ text, speed, size }: TextStreamerProps) => {
-  const sounds = [
-    "a",
-    "chi",
-    "e",
-    "fu",
-    "ha",
-    "he",
-    "hi",
-    "ho",
-    "i",
-    "ka",
-    "ke",
-    "ki",
-    "ko",
-    "ku",
-    "ma",
-    "me",
-    "mi",
-    "mo",
-    "mu",
-    "na",
-    "ne",
-    "ni",
-    "no",
-    "nu",
-    "o",
-    "re",
-    "ri",
-    "ro",
-    "ru",
-    "sa",
-    "se",
-    "shi",
-    "so",
-    "su",
-    "ta",
-    "te",
-    "to",
-    "tsu",
-    "u",
-    "wa",
-    "ya",
-    "yo",
-    "yu",
-  ];
+  const isMobile = useIsMobile();
   let textRef = useRef<HTMLParagraphElement>(null);
   let intervalRef = useRef<number | null>(null);
+
+  const robotSounds = useContext(AudioContext);
+
+  const playRandomRobotSound = () => {
+    if (robotSounds.length) {
+      // @ts-ignore
+      robotSounds[Math.floor(Math.random() * robotSounds.length)].play();
+    }
+  };
   useEffect(() => {
-    revealText(text);
+    playRandomRobotSound();
+    if (text) {
+      revealText(text);
+    }
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -66,12 +38,9 @@ const TextStreamer = ({ text, speed, size }: TextStreamerProps) => {
   const revealText = (revealedText: string = " ") => {
     let index = 0;
     intervalRef.current = setInterval(() => {
-      const audio = new Audio(
-        `sounds/${sounds[Math.floor(Math.random() * sounds.length)]}.wav`
-      );
       // jank way of only playing audio 1 out of every 10 intervals
       if (index % 10 === 0) {
-        audio.play();
+        playRandomRobotSound();
       }
       if (index + 1 >= revealedText.length) {
         clearInterval(intervalRef.current);
@@ -85,12 +54,12 @@ const TextStreamer = ({ text, speed, size }: TextStreamerProps) => {
 
   return (
     <p
-      style={{ width: "50vw" }}
+      style={{ width: isMobile ? "95vw" : "50vw" }}
       id="streamingText"
       ref={textRef}
       className={`${
-        size === "small" ? "min-h-32" : "min-h-52"
-      } text-2xl mb-4 p-4 self-center border rounded border-red-600 w-full whitespace-pre-wrap`}
+        size === "small" ? "sm:min-h-32" : "sm:min-h-52"
+      } mb-0 p-1 self-center border rounded border-red-600 w-full whitespace-pre-wrap min-h-16 text-lg sm:mb-4 sm:p-4 sm:text-2xl`}
     ></p>
   );
 };

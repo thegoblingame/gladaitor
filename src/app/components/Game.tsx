@@ -1,18 +1,26 @@
+"use client";
+
 import {
   Button,
   Card,
   CardHeader,
   CardMedia,
   CircularProgress,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import hypotheticals from "../utils/hypotheticals.json";
 import Weapon from "./Weapon";
 import { AggregatorOutput, promptAggregator } from "../utils/promptAggregator";
 import TextStreamer from "./TextStreamer";
+import useIsMobile from "../hooks/useIsMobile";
+import { DeathRecap } from "../types/types";
+import { trimKey } from "../utils/helperFunctions";
 
 export interface GameProps {
   setMode: (mode: "home" | "game" | "death") => void;
+  setDeathRecap: (recap: DeathRecap) => void;
 }
 
 export interface GPTResponse {
@@ -20,7 +28,7 @@ export interface GPTResponse {
   winner: "player" | "enemy";
 }
 
-export default function Game({ setMode }: GameProps) {
+export default function Game({ setMode, setDeathRecap }: GameProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [humanWeaponKeys, setHumanWeaponKeys] = useState<string[]>([]);
   const [humanAnswer, setHumanAnswer] = useState<string>("");
@@ -36,6 +44,34 @@ export default function Game({ setMode }: GameProps) {
     undefined
   );
   const [playerHP, setPlayerHP] = useState<number>(100);
+  const isMobile = useIsMobile();
+
+  const smallTheme = createTheme({
+    components: {
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            padding: "0px",
+          },
+        },
+      },
+    },
+  });
+
+  const bigTheme = createTheme({
+    components: {
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            padding: "0px",
+          },
+          title: {
+            fontSize: "24px",
+          },
+        },
+      },
+    },
+  });
 
   const lossPenalty = 50;
   const winBonus = 10;
@@ -53,12 +89,6 @@ export default function Game({ setMode }: GameProps) {
     "napster.png",
   ];
 
-  // const deathSound = new Audio("sounds/death_sound.mp3");
-  // in general we keep the player and enemy answers in state with the extensions because we want to be able to easily get the image urls, we trim it whenever we want to display it to the player
-  function trimKey(key: string) {
-    return key.substring(key.indexOf("/") + 1).replace(/_/g, " ");
-  }
-
   const getEnemyFilename = (round: number) => {
     return enemies[(round - 1) % enemies.length];
   };
@@ -66,11 +96,6 @@ export default function Game({ setMode }: GameProps) {
   const trimResponse = (response: string, regex: RegExp) => {
     return response?.replaceAll(regex, "");
   };
-
-  // const acceptDeath = () => {
-  //   setMode("death");
-  //   deathSound.play();
-  // };
 
   const preselectHypotheticals = () => {
     // some ts issue about how older browsers cant do this, fuck em
@@ -177,7 +202,7 @@ export default function Game({ setMode }: GameProps) {
   };
 
   const reroll = () => {
-    if (playerHP > rerollCost) {
+    if (playerHP > rerollCost && !roundOver) {
       setPlayerHP((prevHP) => prevHP - rerollCost);
       fetchWeaponsWrapper("human");
     }
@@ -188,7 +213,7 @@ export default function Game({ setMode }: GameProps) {
   }, []);
 
   useEffect(() => {
-    if (shuffledHypotheticalIndexes) {
+    if (shuffledHypotheticalIndexes.length > 0) {
       setCurrentHypothetical(
         hypotheticals[shuffledHypotheticalIndexes[roundCounter - 1]]?.text
       );
@@ -223,6 +248,7 @@ export default function Game({ setMode }: GameProps) {
         weaponKey={weaponKey}
         headerColor="text-black"
         onClick={() => submitAnswers(weaponKey)}
+        size={isMobile ? "small" : "large"}
       />
     );
   });
@@ -230,13 +256,57 @@ export default function Game({ setMode }: GameProps) {
   return (
     <main className="flex min-h-screen flex-col items-center">
       <div className="flex flex-col items-center">
-        <h1 className="text-3xl mb-4">round {roundCounter}</h1>
-        <img
-          src="/images/logo.png"
-          height={250}
-          width={250}
-          alt="robot overlord"
-        />
+        <h1 className="text-2xl sm:text-3xl sm:mb-4">round {roundCounter}</h1>
+        {isMobile ? (
+          <div
+            className="flex justify-between w-screen mx-2"
+            style={{ width: "95vw" }}
+          >
+            <div className="text-xl">HP: {playerHP}/100</div>
+            <img
+              className="mr-12 absolute left-2/4"
+              src="/images/logo.png"
+              height={100}
+              width={100}
+              alt="robot overlord"
+              style={{ transform: "translateX(-50%)" }}
+            />
+            <ThemeProvider theme={smallTheme}>
+              <Card
+                className={`border-2 border-black mb-2 rounded-lg grow flex flex-col items-center ${
+                  playerHP > 5 && !roundOver
+                    ? "hover:scale-110 hover:bg-cyan-400"
+                    : "opacity-50"
+                }`}
+                sx={{
+                  boxShadow: "5px 5px black",
+                  flex: "1 1 0%",
+                  maxWidth: "5rem",
+                  maxHeight: "7rem",
+                }}
+                onClick={() => reroll()}
+              >
+                <CardHeader
+                  className="text-center p-0 text-md"
+                  title={`reroll (-${rerollCost}HP)`}
+                />
+                <CardMedia
+                  component="img"
+                  style={{ width: "2rem", height: "2rem" }}
+                  image="/images/reroll.png"
+                  alt="reroll choices"
+                />
+              </Card>
+            </ThemeProvider>
+          </div>
+        ) : (
+          <img
+            src="/images/logo.png"
+            height={250}
+            width={250}
+            alt="robot overlord"
+          />
+        )}
         {!roundOver ? (
           <TextStreamer text={currentHypothetical} speed={12.5} size="small" />
         ) : undefined}
@@ -244,8 +314,8 @@ export default function Game({ setMode }: GameProps) {
           <CircularProgress className="my-8" size={200} />
         ) : !roundOver ? (
           <>
-            <div className="flex flex-col w-1/2">
-              <p className="text-2xl self-center">
+            <div className="flex mb-2 sm:flex-col sm:w-1/2">
+              <p className="text-lg self-center sm:text-2xl">
                 {/* DRY this, brother */}
                 The kAIser demands a
                 {overlordMood === moods[0] ? (
@@ -277,101 +347,137 @@ export default function Game({ setMode }: GameProps) {
               </p>
             </div>
             <div className="flex w-2/3">
-              <div className="flex flex-col">
-                <img
-                  className="h-24 w-24"
-                  src="/images/tony.jpg"
-                  alt="you, slave human"
-                />
-                <div className="">HP: {playerHP}/100</div>
-              </div>
-              <span className="text-4xl mx-auto">VS</span>
-              <img
-                className="h-24 w-24 mr-4"
-                src={`/images/${getEnemyFilename(roundCounter)}`}
-                alt="slave robot enemy"
-              />
-              <Card
-                className={`border-2 border-black rounded-lg grow flex flex-col items-center ${
-                  playerHP > 5
-                    ? "hover:scale-110 hover:bg-cyan-400"
-                    : "opacity-50"
-                }`}
-                sx={{
-                  boxShadow: "5px 5px black",
-                  flex: "1 1 0%",
-                  maxWidth: "8rem",
-                  maxHeight: "9rem",
-                  marginRight: "-9rem",
-                  marginTop: "-3rem",
-                }}
-                onClick={() => reroll()}
-              >
-                <CardHeader
-                  className="text-center p-0"
-                  sx={{ fontSize: "16px" }}
-                  title={`reroll (-${rerollCost}HP)`}
-                />
-                <CardMedia
-                  component="img"
-                  style={{ width: "4rem", height: "4rem" }}
-                  image="/images/reroll.png"
-                  alt="reroll choices"
-                />
-              </Card>
+              {isMobile ? undefined : (
+                <>
+                  <div className="flex flex-col">
+                    <img
+                      className="h-24 w-24"
+                      src="/images/tony.jpg"
+                      alt="you, slave human"
+                    />
+                    <div>HP: {playerHP}/100</div>
+                  </div>
+                  <span className="text-4xl mx-auto">VS</span>
+                  <img
+                    className="h-24 w-24 mr-4"
+                    src={`/images/${getEnemyFilename(roundCounter)}`}
+                    alt="slave robot enemy"
+                  />
+                  <ThemeProvider theme={bigTheme}>
+                    <Card
+                      className={`border-2 border-black rounded-lg grow flex flex-col items-center ${
+                        playerHP > 5
+                          ? "hover:scale-110 hover:bg-cyan-400"
+                          : "opacity-50"
+                      }`}
+                      sx={{
+                        boxShadow: "5px 5px black",
+                        flex: "1 1 0%",
+                        maxWidth: isMobile ? "4rem" : "8rem",
+                        maxHeight: isMobile ? "5rem" : "9rem",
+                      }}
+                      onClick={() => reroll()}
+                    >
+                      <CardHeader
+                        className="text-center p-0 text-md"
+                        // sx={isMobile ? { fontSize: "8px" } : { fontSize: "16px" }}
+                        title={`reroll (-${rerollCost}HP)`}
+                      />
+                      <CardMedia
+                        component="img"
+                        style={
+                          isMobile
+                            ? { width: "2rem", height: "2rem" }
+                            : { width: "4rem", height: "4rem" }
+                        }
+                        image="/images/reroll.png"
+                        alt="reroll choices"
+                      />
+                    </Card>
+                  </ThemeProvider>
+                </>
+              )}
             </div>
 
-            <div className="flex m-4 w-full justify-center">
+            <div className="flex flex-wrap justify-center sm:m-4">
               {renderedWeapons}
             </div>
           </>
         ) : (
           <>
-            <div className="flex flex-col mb-4 w-2/3">
+            <div className="flex flex-col mb-4 sm:w-2/3">
               <TextStreamer
-                // currentVerdict can be undefined but not gonna fix it RN because its more convenient that way bc of the way textstreamer works
+                // because text streamer takes whatever text it is given and immediately starts reading it out, it's more convenient to just initialize current verdict to undefined and have a conditional statement in text streamer that handles when current verdict is undefined
                 // @ts-ignore
                 text={trimResponse(currentVerdict.explanation, /\\/g)}
                 speed={12.5}
                 size="big"
               />
-              <div
-                style={{ minWidth: "50vw" }}
-                className="flex justify-between self-center mb-4 w-full"
-              >
-                <div className="flex flex-col">
-                  <img
-                    className="h-24 w-24"
-                    src="/images/tony.jpg"
-                    alt="you, slave human"
+              {isMobile ? (
+                <div className="flex justify-center mb-2">
+                  <Weapon
+                    key={humanAnswer}
+                    weaponKey={humanAnswer}
+                    headerColor={
+                      currentVerdict?.winner === "player"
+                        ? "text-green-500"
+                        : "text-red-600"
+                    }
+                    size="small"
                   />
-                  <div className="">HP: {playerHP}/100</div>
+                  <span className="mx-4 text-4xl">VS</span>
+                  <Weapon
+                    key={enemyAnswer}
+                    weaponKey={enemyAnswer}
+                    headerColor={
+                      currentVerdict?.winner === "enemy"
+                        ? "text-green-500"
+                        : "text-red-600"
+                    }
+                    size="small"
+                  />
                 </div>
-                <Weapon
-                  key={humanAnswer}
-                  weaponKey={humanAnswer}
-                  headerColor={
-                    currentVerdict?.winner === "player"
-                      ? "text-green-500"
-                      : "text-red-600"
-                  }
-                />
-                <span className="text-4xl">VS</span>
-                <Weapon
-                  key={enemyAnswer}
-                  weaponKey={enemyAnswer}
-                  headerColor={
-                    currentVerdict?.winner === "enemy"
-                      ? "text-green-500"
-                      : "text-red-600"
-                  }
-                />
-                <img
-                  className="h-24 w-24 self-start"
-                  src={`/images/${getEnemyFilename(roundCounter)}`}
-                  alt="slave robot enemy"
-                />
-              </div>
+              ) : (
+                <div
+                  style={{ minWidth: "50vw" }}
+                  className="flex justify-between self-center mb-4 w-full"
+                >
+                  <div className="flex flex-col">
+                    <img
+                      className="h-24 w-24"
+                      src="/images/tony.jpg"
+                      alt="you, slave human"
+                    />
+                    <div className="">HP: {playerHP}/100</div>
+                  </div>
+                  <Weapon
+                    key={humanAnswer}
+                    weaponKey={humanAnswer}
+                    headerColor={
+                      currentVerdict?.winner === "player"
+                        ? "text-green-500"
+                        : "text-red-600"
+                    }
+                    size="large"
+                  />
+                  <span className="text-4xl">VS</span>
+                  <Weapon
+                    key={enemyAnswer}
+                    weaponKey={enemyAnswer}
+                    headerColor={
+                      currentVerdict?.winner === "enemy"
+                        ? "text-green-500"
+                        : "text-red-600"
+                    }
+                    size="large"
+                  />
+                  <img
+                    className="h-24 w-24 self-start"
+                    src={`/images/${getEnemyFilename(roundCounter)}`}
+                    alt="slave robot enemy"
+                  />
+                </div>
+              )}
               {playerHP > 0 ? (
                 <Button
                   className="w-fit self-center"
@@ -398,7 +504,13 @@ export default function Game({ setMode }: GameProps) {
                     fontFamily: "Comic Sans MS",
                     height: "3.5rem",
                   }}
-                  onClick={() => setMode("death")}
+                  onClick={() => {
+                    setMode("death");
+                    setDeathRecap({
+                      killedBy: enemyAnswer,
+                      roundOfDeath: roundCounter,
+                    });
+                  }}
                 >
                   accept death
                 </Button>
