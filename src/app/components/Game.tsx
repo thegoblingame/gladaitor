@@ -87,6 +87,7 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
     "aol.png",
     "limewire.png",
     "napster.png",
+    "akinator.png",
   ];
 
   const getEnemyFilename = (round: number) => {
@@ -223,8 +224,8 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
   useEffect(() => {
     setRoundOver(false);
     // set the weapons for player and enemy respectively
-    fetchWeaponsWrapper("human");
-    fetchWeaponsWrapper("enemy");
+    // fetchWeaponsWrapper("human");
+    // fetchWeaponsWrapper("enemy");
     setCurrentHypothetical(
       hypotheticals[shuffledHypotheticalIndexes[roundCounter - 1]]?.text
     );
@@ -237,9 +238,10 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
       setPlayerHP((prevHP) => Math.min(prevHP + winBonus, 100));
     } else if (currentVerdict && currentVerdict.winner === "enemy") {
       setPlayerHP((prevHP) => prevHP - lossPenalty);
-    } else {
-      // error
     }
+    // set the weapons for player and enemy respectively. doing it here so it preloads for the next round
+    fetchWeaponsWrapper("human");
+    fetchWeaponsWrapper("enemy");
   }, [currentVerdict]);
   const renderedWeapons = humanWeaponKeys.map((weaponKey: string) => {
     return (
@@ -256,13 +258,15 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
   return (
     <main className="flex min-h-screen flex-col items-center">
       <div className="flex flex-col items-center">
-        <h1 className="text-2xl sm:text-3xl sm:mb-4">round {roundCounter}</h1>
+        <h1 className="text-2xl text-black sm:text-3xl sm:mb-4">
+          round {roundCounter}
+        </h1>
         {isMobile ? (
           <div
             className="flex justify-between w-screen mx-2"
             style={{ width: "95vw" }}
           >
-            <div className="text-xl">HP: {playerHP}/100</div>
+            <div className="text-black text-xl">HP: {playerHP}/100</div>
             <img
               className="mr-12 absolute left-2/4"
               src="/images/logo.png"
@@ -315,7 +319,7 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
         ) : !roundOver ? (
           <>
             <div className="flex mb-2 sm:flex-col sm:w-1/2">
-              <p className="text-lg self-center sm:text-2xl">
+              <p className="text-lg text-black self-center sm:text-2xl">
                 {/* DRY this, brother */}
                 The kAIser demands a
                 {overlordMood === moods[0] ? (
@@ -355,7 +359,7 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                       src="/images/tony.jpg"
                       alt="you, slave human"
                     />
-                    <div>HP: {playerHP}/100</div>
+                    <div className="text-black">HP: {playerHP}/100</div>
                   </div>
                   <span className="text-4xl mx-auto">VS</span>
                   <img
@@ -448,7 +452,7 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                       src="/images/tony.jpg"
                       alt="you, slave human"
                     />
-                    <div className="">HP: {playerHP}/100</div>
+                    <div className="text-black">HP: {playerHP}/100</div>
                   </div>
                   <Weapon
                     key={humanAnswer}
@@ -507,8 +511,9 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                   onClick={() => {
                     setMode("death");
                     setDeathRecap({
-                      killedBy: enemyAnswer,
+                      killedBy: trimKey(enemyAnswer),
                       roundOfDeath: roundCounter,
+                      id: crypto.randomUUID(),
                     });
                   }}
                 >

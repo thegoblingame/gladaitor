@@ -17,32 +17,26 @@ const TextStreamer = ({ text, speed, size }: TextStreamerProps) => {
 
   const robotSounds = useContext(AudioContext);
 
-  const playRandomRobotSound = () => {
-    if (robotSounds.length) {
-      // @ts-ignore
-      robotSounds[Math.floor(Math.random() * robotSounds.length)].play();
-    }
-  };
   useEffect(() => {
-    playRandomRobotSound();
     if (text) {
       revealText(text);
     }
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        robotSounds.pause();
+        robotSounds.currentTime = 0;
       }
     };
   }, [text]);
 
   const revealText = (revealedText: string = " ") => {
     let index = 0;
+    robotSounds.play();
     intervalRef.current = setInterval(() => {
-      // jank way of only playing audio 1 out of every 10 intervals
-      if (index % 10 === 0) {
-        playRandomRobotSound();
-      }
       if (index + 1 >= revealedText.length) {
+        robotSounds.pause();
+        robotSounds.currentTime = 0;
         clearInterval(intervalRef.current);
       }
       if (textRef.current) {
@@ -59,7 +53,7 @@ const TextStreamer = ({ text, speed, size }: TextStreamerProps) => {
       ref={textRef}
       className={`${
         size === "small" ? "sm:min-h-32" : "sm:min-h-52"
-      } mb-0 p-1 self-center border rounded border-red-600 w-full whitespace-pre-wrap min-h-16 text-lg sm:mb-4 sm:p-4 sm:text-2xl`}
+      } text-black mb-0 p-1 self-center border rounded border-red-600 w-full whitespace-pre-wrap min-h-16 text-lg sm:mb-4 sm:p-4 sm:text-2xl`}
     ></p>
   );
 };

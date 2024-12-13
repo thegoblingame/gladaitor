@@ -89,7 +89,7 @@ export default function Weapon({
             height: size === "small" ? 140 : 200,
             objectFit: "cover",
           }}
-          image={`https://gladaitor.com/${weaponKey}`}
+          image={`https://weapons.gladaitor.com/${weaponKey}`}
           alt={`Picture of ${weaponKey}`}
         />
       </Card>

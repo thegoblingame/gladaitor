@@ -11,8 +11,6 @@ export default function App() {
     typeof window !== "undefined"
       ? new Audio("sounds/death_sound.mp3")
       : undefined;
-  // const [name, setName] = useState<string>("");
-  // const [nameValid, setNameValid] = useState<boolean>(true);
   const [mode, setMode] = useState<"home" | "game" | "death">("home");
   const [deathRecap, setDeathRecap] = useState<DeathRecap | undefined>(
     undefined
