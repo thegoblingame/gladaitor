@@ -17,6 +17,7 @@ export interface WeaponProps {
   cost?: number;
   createdBy?: string;
   onClick?: (key: string) => void;
+  verdictIndicator?: "✅" | "❌" | "";
 }
 
 export default function Weapon({
@@ -26,6 +27,7 @@ export default function Weapon({
   size,
   cost,
   createdBy,
+  verdictIndicator = "",
 }: WeaponProps) {
   const smallTheme = createTheme({
     components: {
@@ -81,7 +83,10 @@ export default function Weapon({
           maxHeight: size === "small" ? "155px" : "240px",
         }}
       >
-        <CardHeader className={`${headerColor}`} title={trimKey(weaponKey)} />
+        <CardHeader
+          className={`${headerColor}`}
+          title={`${trimKey(weaponKey)}${verdictIndicator}`}
+        />
         <CardMedia
           component="img"
           style={{

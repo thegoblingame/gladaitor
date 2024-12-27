@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Button,
   Card,
   CardHeader,
@@ -255,6 +256,29 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
     );
   });
 
+  const healthBar = (
+    <>
+      <Box
+        sx={{
+          width: "100%",
+          height: "1.5rem",
+          overflow: "hidden",
+          borderWidth: "2px",
+          borderColor: "black",
+        }}
+      >
+        <Box
+          sx={{
+            width: `${Math.max(playerHP, 0)}%`,
+            backgroundColor:
+              playerHP > 50 ? "rgb(34 197 94)" : "rgb(220 38 38)",
+            height: "100%",
+          }}
+        />
+      </Box>
+    </>
+  );
+
   return (
     <main className="flex min-h-screen flex-col items-center">
       <div className="flex flex-col items-center">
@@ -266,7 +290,10 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
             className="flex justify-between w-screen mx-2"
             style={{ width: "95vw" }}
           >
-            <div className="text-black text-xl">HP: {playerHP}/100</div>
+            <div className="flex flex-col">
+              <div className="text-black text-xl">HP: {playerHP}/100</div>
+              {healthBar}
+            </div>
             <img
               className="mr-12 absolute left-2/4"
               src="/images/logo.png"
@@ -359,7 +386,10 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                       src="/images/tony.jpg"
                       alt="you, slave human"
                     />
-                    <div className="text-black">HP: {playerHP}/100</div>
+                    <div className="flex flex-col">
+                      <div className="text-black">HP: {playerHP}/100</div>
+                      {healthBar}
+                    </div>
                   </div>
                   <span className="text-4xl mx-auto">VS</span>
                   <img
@@ -428,6 +458,9 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                         : "text-red-600"
                     }
                     size="small"
+                    verdictIndicator={
+                      currentVerdict?.winner === "player" ? "✅" : "❌"
+                    }
                   />
                   <span className="mx-4 text-4xl">VS</span>
                   <Weapon
@@ -439,6 +472,9 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                         : "text-red-600"
                     }
                     size="small"
+                    verdictIndicator={
+                      currentVerdict?.winner === "enemy" ? "✅" : "❌"
+                    }
                   />
                 </div>
               ) : (
@@ -452,7 +488,10 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                       src="/images/tony.jpg"
                       alt="you, slave human"
                     />
-                    <div className="text-black">HP: {playerHP}/100</div>
+                    <div className="flex flex-col">
+                      <div className="text-black">HP: {playerHP}/100</div>
+                      {healthBar}
+                    </div>
                   </div>
                   <Weapon
                     key={humanAnswer}
@@ -463,6 +502,9 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                         : "text-red-600"
                     }
                     size="large"
+                    verdictIndicator={
+                      currentVerdict?.winner === "player" ? "✅" : "❌"
+                    }
                   />
                   <span className="text-4xl">VS</span>
                   <Weapon
@@ -474,6 +516,9 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                         : "text-red-600"
                     }
                     size="large"
+                    verdictIndicator={
+                      currentVerdict?.winner === "enemy" ? "✅" : "❌"
+                    }
                   />
                   <img
                     className="h-24 w-24 self-start"
