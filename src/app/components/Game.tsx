@@ -228,7 +228,11 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
     // fetchWeaponsWrapper("human");
     // fetchWeaponsWrapper("enemy");
     setCurrentHypothetical(
-      hypotheticals[shuffledHypotheticalIndexes[roundCounter - 1]]?.text
+      hypotheticals[
+        shuffledHypotheticalIndexes[
+          (roundCounter - 1) % shuffledHypotheticalIndexes.length
+        ]
+      ]?.text
     );
     const randomMood = Math.floor(Math.random() * moods.length);
     setOverlordMood(moods[randomMood]);
