@@ -373,11 +373,6 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
                     {moods[3]}
                   </span>
                 ) : undefined}
-                {overlordMood === moods[4] ? (
-                  <span className="font-bold mx-2 text-sky-700">
-                    {moods[4]}
-                  </span>
-                ) : undefined}
                 answer.
               </p>
             </div>
