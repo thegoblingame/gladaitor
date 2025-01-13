@@ -77,7 +77,7 @@ export default function Game({ setMode, setDeathRecap }: GameProps) {
   const lossPenalty = 50;
   const winBonus = 10;
   const rerollCost = 5;
-  const moods = ["logical", "humorous", "weird", "cheerful", "cynical"];
+  const moods = ["logical", "humorous", "weird", "cheerful"];
   const enemies = [
     "clippy.png",
     "jeeves.png",
